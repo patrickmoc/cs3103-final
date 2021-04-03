@@ -122,7 +122,7 @@ class SignIn(Resource):
 	def get(self):
 		if 'username' in session:
 			username = session['username']
-			response = {'status': 'success'}
+			response = {'status': 'success', 'username': username}
 			responseCode = 200
 		else:
 			response = {'status': 'fail'}
