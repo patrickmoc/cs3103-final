@@ -239,8 +239,6 @@ class Users(Resource):
 		if not request.json or not 'Name' in request.json:
 			abort(400) # bad request
 
-		# The request object holds the ... wait for it ... client request!
-		# Pull the results out of the json request
 		name = request.json['Name']
 		isAdmin = 0
 
