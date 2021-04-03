@@ -1,0 +1,364 @@
+openapi: 3.0.0
+servers:
+ - url: http://cs3103.cs.unb.ca
+info:
+  description: This is an API for managing a list of desired presents. Used for the CS3103 final project.
+  version: '1.0'
+  title: Presents Repository API
+  contact:
+    email: 'pmockler@unb.ca'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: users
+    description: Operations available to validated users.
+  - name: admins
+    description: Operations only available to System Administrators.
+security: []
+paths:
+
+  /signin:
+    post:
+      summary: logs a User into the system
+      description: Grants a valid User access into the system via a session.
+      security:
+        - cookieAuth: []
+      responses:
+        '201':
+          description: The User was successfully signed in.
+          headers: 
+            Set-Cookie:
+              schema: 
+                type: string
+                example: userId=7; userName=pmockler; Path=/; HttpOnly
+        '400':
+          description: Bad request.
+        '403':
+          description: Access denied.
+
+    get:
+      summary: logs a User into the system
+      description: Grants a valid User access into the system via a session.
+      security:
+      - cookieAuth: []
+      responses:
+          '200':
+            description: The User was successfully signed in.
+          '403':
+            description: Access denied.
+
+  /user/{userId}:
+    get:
+      tags:
+      - users
+      summary: Find a User by ID
+      operationId: getUserById
+      description: Returns a User with a matching userID.
+      parameters:
+        - in: path
+          name: userId
+          description: UserID to search for.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User with a matching ID was found.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                xml:
+                  name: 'users'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':  
+          description: Server error while handling request.
+
+    put:
+      tags:
+        - admins
+      summary: Adds a User
+      operationId: addUser
+      description: Add a new User into the system to allow them to log in.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: User created successfully.
+        '400':
+          description: Invalid User information.
+        '403':
+          description: Not authorized to add User.
+        '409':
+          description: User already exists.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: New User information.
+
+    delete:
+      tags:
+        - admins
+      summary: Delete a User
+      operationId: removeUser
+      description: Delete a User by unique ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully.
+        '404':
+          description: User not found.
+        '403':
+          description: Not authorized to delete User.
+        '400':
+          description: Bad request.
+
+  /users:
+    get:
+      tags:
+      - users
+      summary: Lists Users
+      operationId: getUsers
+      description: Displays a list of all public Users.
+      responses:
+        '200':
+          description: A list of User objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                xml:
+                  name: 'users'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Server error while handling request.
+
+    put:
+      tags:
+        - users
+      summary: Creates a User
+      operationId: addUser
+      description: Creates a new User.
+      responses:
+        '200':
+          description: User created successfully.
+        '400':
+          description: User Present info provided.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: The User's information.
+
+  /present/{presentId}:
+    get:
+      tags:
+      - users
+      summary: Get a specific Present
+      operationId: getPresentById
+      description: Search for a specifc Present by its ID value.
+      parameters:
+        - in: path
+          name: presentId
+          description: The ID of the present.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Present returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Present'
+            application/xml:
+              schema:
+                xml:
+                  name: 'presents'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Present'
+        '400':
+          description: Bad Request.
+        '404':
+          description: Present Not Found.
+
+    put:
+      tags:
+        - users
+      summary: Creates a Present
+      operationId: addPresent
+      description: Creates a new Present and links it to the User creating it.
+      parameters:
+        - in: path
+          name: presentId
+          description: The ID of the present.
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Present created successfully.
+        '400':
+          description: Invalid Present info provided.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Present'
+        description: The Present's information.
+
+    post:
+      tags:
+        - users
+      summary: Updates Present contents
+      operationId: updatePresent
+      description: Updates the contents of a Present.
+      parameters:
+        - in: path
+          name: presentId
+          description: ID of Present to be updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Present updated successfully.
+        '400':
+          description: Bad request.
+        '403':
+          description: Not authorized to modify Present.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Present'
+        description: Present information to update. 
+
+    delete:
+      tags:
+        - users
+      summary: Deletes specified Present
+      operationId: removePresent
+      description: Delete a Present belonging to the User, based on the provided ID value.
+      parameters:
+        - name: presentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Present deleted successfully.
+        '403':
+          description: Not authorized to delete Present.
+        '404':
+          description: Present not found.
+
+  /presents/{userId}:
+    get:
+      tags:
+      - users
+      summary: List User's Presents
+      operationId: getPresentsByUser
+      description: Lists all Presents linked to a User specified by their ID.
+      parameters:
+        - in: path
+          name: userId
+          description: The ID of the User.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of Presents for specified User.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Present'
+            application/xml:
+              schema:
+                xml:
+                  name: 'presents'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Present'
+        '400':
+          description: Bad request.
+        '404':
+          description: Could not find User.
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - userName
+      properties:
+        userId:
+          type: integer
+          example: 7
+        userName:
+          type: string
+          example: 'pmockler'
+    Present:
+      type: object
+      required:
+        - presentName
+        - presentPrice
+        - userId
+      properties:
+        presentId:
+          type: integer
+          example: 1234
+        userId:
+          type: integer
+          example: 7
+        presentName:
+          type: string
+          example: 'Amazon Gift Card'
+        presentDesc:
+          type: string
+          example: 'Gift card valid on any Amazon item.'
+        presentPrice:
+          type: number
+          example: 25.75
+  securitySchemes:
+    cookieAuth:
+      type: oauth2
+      flows: 
+        implicit:
+          authorizationUrl: https://cs3103.cs.unb.ca/api/oauth/dialog
+          scopes: 
+            authorizationCode: ""
+            authorizationUrl: https://cs3103.cs.unb.ca/api/oauth/dialog
+            tokenUrl: https://cs3103.cs.unb.ca/api/oauth/token

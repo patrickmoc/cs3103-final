@@ -1,0 +1,12 @@
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:45020/user/1
+
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:45020/users
+
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:45020/present/1
+
+curl -i -H "Content-Type: application/json" -X PUT -b cookie-jar -k https://cs3103.cs.unb.ca:45020/present/6
+
+curl -i -H "Content-Type: application/json" -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:45020/present/6
+
+curl -i -X POST -H "Content-Type: application/json" -d '{"presentName": Xbox", "presentDesc": "muh exclusivs", "presentPrice": "799.99"}' cookie-jar -k https://192.168.10.4:45020/user
+
