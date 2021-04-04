@@ -22,10 +22,7 @@ app.config['SESSION_COOKIE_DOMAIN'] = settings.APP_HOST
 
 Session(app)
 
-####################################################################################
-#
 # Error handlers
-#
 @app.errorhandler(400) # decorators to add to 400 response
 def not_found(error):
 	return make_response(jsonify( { 'status': 'Bad request' } ), 400)
@@ -38,10 +35,7 @@ def not_found(error):
 def not_found(error):
 	return make_response(jsonify( { 'status': 'Internal server error' } ), 500)
 
-####################################################################################
-#
-# Static Endpoints for humans
-#
+
 class Root(Resource):
    # get method. What might others be aptly named? (hint: post)
 	def get(self):
@@ -52,10 +46,6 @@ class Developer(Resource):
 	def get(self):
 		return app.send_static_file('developer.html')
 
-####################################################################################
-#
-# Routing: GET and POST using Flask-Session
-#
 class SignIn(Resource):
 	#
 	# Set Session and return Cookie
@@ -92,17 +82,8 @@ class SignIn(Resource):
 				ldapConnection.start_tls()
 				ldapConnection.bind()
 				# At this point we have sucessfully authenticated.
-
-#			if request_params['username'] == 'Rick' and request_params['password'] == 'crapcrap':
-#				session['username'] = request_params['username']
-#				response = {'status': 'success', 'user_id':'1'}
-#				responseCode = 201
-#			else:
-#				response = {'status': 'Access denied'}
-#				responseCode = 403
-#
 				session['username'] = request_params['username']
-# Stuff in here to find the esiting userId or create a use and get the created userId
+				# Stuff in here to find the esiting userId or create a use and get the created userId
 				response = {'status': 'success', 'user_id':'1' }
 				responseCode = 201
 			except LDAPException:
@@ -130,10 +111,6 @@ class SignIn(Resource):
 
 		return make_response(jsonify(response), responseCode)
 
-####################################################################################
-#
-# schools routing: GET and POST, individual school access
-#
 class User(Resource):
 	# GET: Return an identified User (by ID). No authorizations
 	#
@@ -449,10 +426,7 @@ class Presents(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"present": row}), 200) # successful
 
-####################################################################################
-#
 # Identify/create endpoints and endpoint objects
-#
 api = Api(app)
 api.add_resource(Root,'/')
 api.add_resource(Developer,'/dev')
@@ -462,8 +436,6 @@ api.add_resource(Presents, '/presents/<int:userId>')
 api.add_resource(User, '/user/<int:userId>')
 api.add_resource(Users, '/users')
 
-#############################################################################
-# xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
 if __name__ == "__main__":
 	#
 	# You need to generate your own certificates. To do this:
