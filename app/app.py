@@ -112,9 +112,19 @@ class SignIn(Resource):
 		return make_response(jsonify(response), responseCode)
 
 class User(Resource):
-	# GET: Return an identified User (by ID). No authorizations
-	#
+
+	# GET: Return an identified User (by ID).
 	def get(self, userId):
+
+		if 'username' in session:
+			username = session['username']
+			response = {'status': 'success'}
+			responseCode = 200
+		else:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
 		try:
 			dbConnection = pymysql.connect(
 				settings.DB_HOST,
@@ -129,13 +139,14 @@ class User(Resource):
 			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
 			row = cursor.fetchone() # get the single result
 			if row is None:
-				abort(404)
+				response = {'status': 'fail', 'message': 'Not Found'}
+				responseCode = 404
 		except:
 			abort(500) # Nondescript server error
 		finally:
 			cursor.close()
 			dbConnection.close()
-		return make_response(jsonify({"user": row}), 200) # successful
+		return make_response(jsonify(response), 404) # successful
 
 	def delete(self, userId):
 		if 'username' in session:
@@ -143,15 +154,39 @@ class User(Resource):
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
-			response = {'status': 'fail'}
+			response = {'status': 'fail', 'message': 'Access Denied'}
 			responseCode = 403
-		if not request.json:
-			abort(400)
+			return make_response(jsonify(response), responseCode)
 
-		# TODO: Pay no attention to how insecure this is
-		# will fix when we figure out how to use ldap properly :)
-		execUserID = request.json['execUserID']
+		# Get Executing User
+		try:
+			dbConnection = pymysql.connect(
+				settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (username,)
+			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
+			user = cursor.fetchone()
+			if user is None:
+				abort(404)
+		except:
+			abort(500) # Nondescript server error
+		finally:
+			cursor.close()
+			dbConnection.close()
 
+		# Only allow deletion by an admin
+		if not user["isAdmin"]:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
+		# Delete User
 		try:
 			dbConnection = pymysql.connect(
 				settings.DB_HOST,
@@ -162,7 +197,7 @@ class User(Resource):
 				cursorclass= pymysql.cursors.DictCursor)
 			sql = 'removeUser'
 			cursor = dbConnection.cursor()
-			sqlArgs = (userId, execUserID,)
+			sqlArgs = (userId, user["userID"],)
 			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
 			dbConnection.commit()
 		except:
