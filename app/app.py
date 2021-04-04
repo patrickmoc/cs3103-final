@@ -103,7 +103,7 @@ class SignIn(Resource):
 	def get(self):
 		if 'username' in session:
 			username = session['username']
-			response = {'status': 'success'}
+			response = {'status': 'success', 'username': username}
 			responseCode = 200
 		else:
 			response = {'status': 'fail'}
@@ -253,8 +253,6 @@ class Users(Resource):
 		if not request.json or not 'Name' in request.json:
 			abort(400) # bad request
 
-		# The request object holds the ... wait for it ... client request!
-		# Pull the results out of the json request
 		name = request.json['Name']
 		isAdmin = 0
 
