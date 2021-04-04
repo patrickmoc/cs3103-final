@@ -141,12 +141,14 @@ class User(Resource):
 			if row is None:
 				response = {'status': 'fail', 'message': 'Not Found'}
 				responseCode = 404
+			else:
+				response = {'user': row }
 		except:
 			abort(500) # Nondescript server error
 		finally:
 			cursor.close()
 			dbConnection.close()
-		return make_response(jsonify(response), 404) # successful
+		return make_response(jsonify(response), responseCode) # successful
 
 	def delete(self, userId):
 		if 'username' in session:
