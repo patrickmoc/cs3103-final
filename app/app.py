@@ -210,11 +210,21 @@ class User(Resource):
 		return make_response(jsonify({"status": "success"}), 200) # successful
 
 class Users(Resource):
-    # GET: Return all User resources. No authorizations
+    # GET: Return all User resources.
 	#
 	# Example request: curl -i -H "Content-Type: application/json" -X GET
 	# -b cookie-jar -k https://192.168.10.4:61340/users
 	def get(self):
+
+		if 'username' in session:
+			username = session['username']
+			response = {'status': 'success'}
+			responseCode = 200
+		else:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
 		try:
 			dbConnection = pymysql.connect(
 				settings.DB_HOST,
@@ -248,13 +258,43 @@ class Users(Resource):
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
-			response = {'status': 'fail'}
+			response = {'status': 'fail', 'message': 'Access Denied'}
 			responseCode = 403
+			return make_response(jsonify(response), responseCode)
 		if not request.json or not 'Name' in request.json:
-			abort(400) # bad request
+			response = {'status': 'fail', 'message': 'Bad Request'}
+			responseCode = 400
+			return make_response(jsonify(response), responseCode)
 
 		name = request.json['Name']
 		isAdmin = 0
+
+		# Get executing user
+		try:
+			dbConnection = pymysql.connect(settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (username,)
+			cursor.callproc(sql,sqlArgs)
+			user = cursor.fetchone()
+			if user is None:
+				abort(404)
+		except:
+			abort(500)
+		finally:
+			cursor.close()
+			dbConnection.close()
+
+		# Only allow users to make a user under their own name
+		if username != name and not user["isAdmin"]:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
 
 		try:
 			dbConnection = pymysql.connect(settings.DB_HOST,
@@ -274,12 +314,10 @@ class Users(Resource):
 		finally:
 			cursor.close()
 			dbConnection.close()
-		# Create user uri.
-		uri = 'http://'+settings.APP_HOST+':'+str(settings.APP_PORT)
-		uri = uri+str(request.url_rule)+'/'+str(row['LAST_INSERT_ID()'])
-		return make_response(jsonify( { "uri" : uri } ), 201) # successful resource creation
+		# Return user ID
+		ID = row['LAST_INSERT_ID()']
+		return make_response(jsonify( { "userID" : ID } ), 201) # successful resource creation
 
-	# turn set into json and return it
 
 class Present(Resource):
 	# GET: Return identified present resource (present by ID)
