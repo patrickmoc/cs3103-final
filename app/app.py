@@ -356,7 +356,10 @@ class Present(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"present": row}), 200) # successful
 
-	# TODO: VALIDATE VALIDATE VALIDATE VALIDATE
+	#
+	# Update a present if authorized using POST
+	# 
+	#  TODO: VALIDATE VALIDATE VALIDATE VALIDATE
 	def post(self, presentId):
 		if 'username' in session:
 			username = session['username']
@@ -370,7 +373,7 @@ class Present(Resource):
 		presentName = request.json["presentName"]
 		presentDesc = request.json["presentDesc"]
 		presentPrice = request.json["presentPrice"]
-		userId = request.json["userId"]
+		userId = request.json["userID"]
 		
 		try:
 			dbConnection = pymysql.connect(
@@ -382,7 +385,7 @@ class Present(Resource):
 				cursorclass= pymysql.cursors.DictCursor)
 			sql = 'updatePresent'
 			cursor = dbConnection.cursor()
-			sqlArgs = (presentId, presentName, presentDesc, presentPrice, userId,)
+			sqlArgs = (presentId, presentName, presentDesc, presentPrice, userId)
 			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
 			dbConnection.commit()
 		except:
@@ -399,9 +402,39 @@ class Present(Resource):
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
-			response = {'status': 'fail'}
+			response = {'status': 'fail', 'message': 'Access Denied'}
 			responseCode = 403
+			return make_response(jsonify(response), responseCode)
 
+		# Get Executing User
+		try:
+			dbConnection = pymysql.connect(
+				settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (username,)
+			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
+			user = cursor.fetchone()
+			if user is None:
+				abort(404)
+		except:
+			abort(500) # Nondescript server error
+		finally:
+			cursor.close()
+			dbConnection.close()
+
+		# Only allow deletion by an admin
+		if not user["isAdmin"]:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
+		# Delete present
 		try:
 			dbConnection = pymysql.connect(
 				settings.DB_HOST,
@@ -412,11 +445,9 @@ class Present(Resource):
 				cursorclass= pymysql.cursors.DictCursor)
 			sql = 'removePresent'
 			cursor = dbConnection.cursor()
-			# TODO: Supposed to grab executing user from cookies :(
-			sqlArgs = (presentId, 1)
+			sqlArgs = (presentId, user["userID"])
 			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
 			dbConnection.commit()
-			
 		except:
 			abort(500) # Nondescript server error
 		finally:
