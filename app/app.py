@@ -467,8 +467,9 @@ class Presents(Resource):
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
-			response = {'status': 'fail'}
+			response = {'status': 'fail', 'message': 'Access Denied'}
 			responseCode = 403
+			return make_response(jsonify(response), responseCode)
 
 		try:
 			dbConnection = pymysql.connect(
@@ -480,7 +481,7 @@ class Presents(Resource):
 				cursorclass= pymysql.cursors.DictCursor)
 			sql = 'getPresentsByUser'
 			cursor = dbConnection.cursor()
-			sqlArgs = (userId)
+			sqlArgs = (userId,)
 			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
 			row = cursor.fetchall() # get the single result
 			if row is None:
@@ -492,21 +493,57 @@ class Presents(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"present": row}), 200) # successful
 
-	# TODO: VALIDATE VALIDATE VALIDATE VALIDATE
 	def post(self, userId):
 		if 'username' in session:
 			username = session['username']
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
-			response = {'status': 'fail'}
+			response = {'status': 'fail', 'message': 'Access Denied'}
 			responseCode = 403
-		if not request.json:
-			abort(400)
+			return make_response(jsonify(response), responseCode)
+		if not request.json or not 'presentName' in request.json or not 'presentPrice' in request.json:
+			response = {'status': 'fail', 'message': 'Bad Request'}
+			responseCode = 400
+			return make_response(jsonify(response), responseCode)
+
 		presentName = request.json["presentName"]
-		presentDesc = request.json["presentDesc"]
 		presentPrice = request.json["presentPrice"]
+
+		if 'presentDesc' in request.json:
+			presentDesc = request.json["presentDesc"]
+		else:
+			presentDesc = ''
 		
+		# Check user credentials
+		try:
+			dbConnection = pymysql.connect(
+				settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (username,)
+			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
+			user = cursor.fetchone() # get the single result
+			if user is None:
+				abort(404)
+			dbConnection.commit()
+		except:
+			abort(500) # Nondescript server error
+		finally:
+			cursor.close()
+			dbConnection.close()
+
+		if user["userID"] != userId and not user["isAdmin"]:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
+		# add Present
 		try:
 			dbConnection = pymysql.connect(
 				settings.DB_HOST,
