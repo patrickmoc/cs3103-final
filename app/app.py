@@ -357,7 +357,7 @@ class Present(Resource):
 		return make_response(jsonify({"present": row}), 200) # successful
 
 	#
-	# Update a present if authorized using POST
+	# POST: Update a present resource (if authorized)
 	# 
 	#  TODO: VALIDATE VALIDATE VALIDATE VALIDATE
 	def post(self, presentId):
@@ -370,10 +370,32 @@ class Present(Resource):
 			responseCode = 403
 		if not request.json:
 			abort(400)
+
+		# Get executing user
+		try:
+			dbConnection = pymysql.connect(settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (username,)
+			cursor.callproc(sql,sqlArgs)
+			user = cursor.fetchone()
+			if user is None:
+				abort(404)
+		except:
+			abort(500)
+		finally:
+			cursor.close()
+			dbConnection.close()
+
+		userId = user["userID"]
 		presentName = request.json["presentName"]
 		presentDesc = request.json["presentDesc"]
 		presentPrice = request.json["presentPrice"]
-		userId = request.json["userID"]
 		
 		try:
 			dbConnection = pymysql.connect(
@@ -395,7 +417,10 @@ class Present(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"status": "success"}), 200) # successful
 
-
+	# 
+	# DELETE: Delete a present resource
+	#
+	# TODO: VALIDATE (probably)
 	def delete(self, presentId):
 		if 'username' in session:
 			username = session['username']
