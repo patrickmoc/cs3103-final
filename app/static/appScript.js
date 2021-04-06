@@ -10,10 +10,14 @@ Vue.component("modal", {
    data: {
      serviceURL: "https://cs3103.cs.unb.ca:45020",
      //      serviceURL: "https://cs3103.cs.unb.ca:<probably your port number>",
+     // Is the user authenticated
      authenticated: false,
      userData: null,
      presentData: null,
+     // Session ID
      loggedIn: null,
+     // All info about the current user
+     currentUser: null,
      modal: false,
      input: {
        username: "",
@@ -56,6 +60,7 @@ Vue.component("modal", {
    methods: {
      login() {
        if (this.input.username != "" && this.input.password != "") {
+         // Hit LDAP endpoint for initial authentication
          axios
          .post(this.serviceURL+"/signin", {
              "username": this.input.username,
@@ -65,6 +70,42 @@ Vue.component("modal", {
              if (response.data.status == "success") {
                this.authenticated = true;
                this.loggedIn = response.data.user_id;
+
+               // Get user object from the database
+               axios
+               .get(this.serviceURL+"/username/"+this.input.username)
+               .then(response => {
+                 if(response.data.status == "success") {
+                    this.currentUser = response.data.user
+                 }
+                 else {
+
+                   // User doesn't exist, create it
+                   axios
+                   .post(this.serviceURL+"/users/", {
+                     "Name": this.input.username
+                   })
+                   .then(response => {
+                     if(response.data.status == "success") {
+
+                       // Get newly created user object
+                        axios
+                        .get(this.serviceURL+"/user/" + response.data.userID)
+                        .then(response => {
+                          this.currentUser = response.data.user
+                        })
+                     }
+                     else {
+
+                       // If this happens something has gone horribly wrong
+                       this.authenticated = false;
+                       loggedIn = null;
+                       alert("a bruh moment has occurred, please try again");
+                       this.input.password = "";
+                     }
+                   })
+                 }
+               })
              }
          })
          .catch(e => {
