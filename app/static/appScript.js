@@ -144,8 +144,13 @@ Vue.component("modal", {
      },
 
      getPresentsByUser() {
+
+       if(this.selectedUser.userID == undefined) {
+         this.selectedUser = this.currentUser;
+       }
+
       axios
-      .get(this.serviceURL+"/users/"+userId)
+      .get(this.serviceURL+"/presents/"+this.selectedUser.userID)
       .then(response => {
           this.presentData = response.data.presents;
       })
