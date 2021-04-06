@@ -14,7 +14,7 @@ Vue.component("modal", {
      userData: null,
      presentData: null,
      loggedIn: null,
-     editModal: false,
+     modal: false,
      input: {
        username: "",
        password: "",
@@ -127,9 +127,10 @@ Vue.component("modal", {
      },
      
      addPresent() {
+       console.log(`${this.input.presentName} YEA BOYEEEEEE`);
       if (this.input.presentName != "" && this.input.presentPrice != "") {
         axios
-        .post(this.serviceURL+"/present", {
+        .post(this.serviceURL+"/users", {
             "presentName": this.input.presentName,
             "presentDesc": this.input.presentDesc,
             "presentPrice": this.input.presentPrice
@@ -154,11 +155,11 @@ Vue.component("modal", {
      },
  
      showModal() {
-       this.editModal = true;
+       this.modal = true;
      },
  
      hideModal() {
-       this.editModal = false;
+       this.modal = false;
      }
  
    }

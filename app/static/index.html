@@ -40,7 +40,7 @@
 
     <div v-if="authenticated">
 
-      <modal v-if="editModal" @close="hideModal">
+      <modal v-if="modal" @close="hideModal">
 
         <!--
           you can use custom content here to overwrite
@@ -74,10 +74,12 @@
             </div>
           </div>
         </div>
-      </div>
-      <div slot="footer">
-      </div>
-    </modal>
+        <div slot="footer">
+            <button type="button" class="btn btn-secondary" v-on:click="addPresent()">Add present</button>
+            <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
+        </div>
+      </modal>
+    </div>
     <!-- template for the modal component -->
     <script type="text/x-template" id="modal-template">
       <transition name="modal">
@@ -98,13 +100,10 @@
            </section>
            <footer class="modal-footer">
               <slot name="footer">
-                <button type="button" class="btn-green" @click="addPresent()">
-                  Add present
+                I'm the default footer!
+                <button type="button" class="btn-green" @click="hideModal()">
+                  Close me!
                 </button>
-                <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">
-                  Close
-                </button>
-
               </slot>
             </footer>
           </div>
@@ -119,7 +118,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
   <!--script type="text/javascript" src="/slebla15/GroupProject/app/static/appScript.js" ></script>
   <link rel="stylesheet" href="/slebla15/GroupProject/app/static/app.css"-->
-  <script type="text/javascript" src="/static/appScript.js" ></script>
-  <link rel="stylesheet" href="/static/app.css">
+  <script type="text/javascript" src="static/appScript.js" ></script>
+  <link rel="stylesheet" href="static/app.css">
 </body>
 </html>
