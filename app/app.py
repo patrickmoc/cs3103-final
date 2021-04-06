@@ -111,6 +111,45 @@ class SignIn(Resource):
 
 		return make_response(jsonify(response), responseCode)
 
+class User2(Resource):
+
+	def get(self, userName):
+
+		if 'username' in session:
+			username = session['username']
+			response = {'status': 'success'}
+			responseCode = 200
+		else:
+			response = {'status': 'fail', 'message': 'Access Denied'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
+		try:
+			dbConnection = pymysql.connect(
+				settings.DB_HOST,
+				settings.DB_USER,
+				settings.DB_PASSWD,
+				settings.DB_DATABASE,
+				charset='utf8mb4',
+				cursorclass= pymysql.cursors.DictCursor)
+			sql = 'getUserByName'
+			cursor = dbConnection.cursor()
+			sqlArgs = (userName,)
+			cursor.callproc(sql,sqlArgs) # stored procedure, no arguments
+			row = cursor.fetchone() # get the single result
+			if row is None:
+				response = {'status': 'fail', 'message': 'Not Found'}
+				responseCode = 404
+			else:
+				response = {'user': row }
+		except:
+			abort(500) # Nondescript server error
+		finally:
+			cursor.close()
+			dbConnection.close()
+		return make_response(jsonify(response), responseCode) # successful
+
+
 class User(Resource):
 
 	# GET: Return an identified User (by ID).
@@ -601,6 +640,7 @@ api.add_resource(Present, '/present/<int:presentId>')
 api.add_resource(Presents, '/presents/<int:userId>')
 api.add_resource(User, '/user/<int:userId>')
 api.add_resource(Users, '/users')
+api.add_resource(User2, '/username/<string:userName>')
 
 if __name__ == "__main__":
 	#
