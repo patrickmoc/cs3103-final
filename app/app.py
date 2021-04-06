@@ -556,7 +556,7 @@ class Presents(Resource):
 		finally:
 			cursor.close()
 			dbConnection.close()
-		return make_response(jsonify({"present": row}), 200) # successful
+		return make_response(jsonify({"presents": row}), 200) # successful
 
 	def post(self, userId):
 		if 'username' in session:
@@ -630,7 +630,7 @@ class Presents(Resource):
 		finally:
 			cursor.close()
 			dbConnection.close()
-		return make_response(jsonify({"present": row}), 200) # successful
+		return make_response(jsonify({"status": "success", "present": row}), 200) # successful
 
 # Identify/create endpoints and endpoint objects
 api = Api(app)
