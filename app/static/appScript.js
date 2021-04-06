@@ -21,12 +21,12 @@ Vue.component("modal", {
      modal: false,
      input: {
        username: "",
-       password: "",
+       password: ""
      },
      presentForm: {
       presentName: "",
       presentDesc: "",
-      presentPrice: "",
+      presentPrice: ""
      },
      selectedPresent: {
        name: "",
@@ -170,18 +170,20 @@ Vue.component("modal", {
      },
      
      addPresent() {
-       console.log(`${this.input.presentName} YEA BOYEEEEEE`);
       if (this.presentForm.presentName != "" && this.presentForm.presentPrice != "") {
         axios
-        .post(this.serviceURL+"/users", {
+        .post(this.serviceURL+"/presents/" + this.currentUser.userID, {
             "presentName": this.presentForm.presentName,
             "presentDesc": this.presentForm.presentDesc,
             "presentPrice": this.presentForm.presentPrice
-
         })
         .then(response => {
             if (response.data.status == "success") {
+              this.presentForm.presentName = "";
+              this.presentForm.presentDesc = "";
+              this.presentForm.presentPrice = "";
               this.hideModal();
+              alert("Present Added Successfully");
             }
         })
         .catch(e => {
