@@ -281,7 +281,7 @@ class Users(Resource):
 		finally:
 			cursor.close()
 			dbConnection.close()
-		return make_response(jsonify({'user': rows}), 200)
+		return make_response(jsonify({'users': rows}), 200)
 
 	def post(self):
 		#

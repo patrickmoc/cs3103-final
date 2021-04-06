@@ -9,12 +9,11 @@ Vue.component("modal", {
    //------- data --------
    data: {
      serviceURL: "https://cs3103.cs.unb.ca:45020",
-     //      serviceURL: "https://cs3103.cs.unb.ca:<probably your port number>",
-     // Is the user authenticated
+     // Whether or not the user is authenticated
      authenticated: false,
      userData: null,
      presentData: null,
-     // Session ID
+     // Who the logged user is
      loggedIn: null,
      // All info about the current user
      currentUser: null,
@@ -144,7 +143,6 @@ Vue.component("modal", {
      },
 
      getPresentsByUser() {
-
        if(this.selectedUser.userID == undefined) {
          this.selectedUser = this.currentUser;
        }
@@ -163,7 +161,6 @@ Vue.component("modal", {
      deletePresent(presentId) {
        alert("WHEN THE IMPOSTER IS SUS");
      },
- 
  
      selectPresent(presentId) {
          this.showModal();
@@ -187,8 +184,12 @@ Vue.component("modal", {
               this.presentForm.presentName = "";
               this.presentForm.presentDesc = "";
               this.presentForm.presentPrice = "";
+              this.getPresentsByUser();
+              
               this.hideModal();
               alert("Present Added Successfully");
+
+
             }
         })
         .catch(e => {

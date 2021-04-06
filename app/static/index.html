@@ -17,25 +17,47 @@
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
         <button type="button" class="btn btn-outline-primary" v-on:click="getUsers()">List users</button>
         <button type="button" class="btn btn-outline-primary" v-on:click="showModal()">Add a present</button>
-        <button type="button" class="btn btn-outline-primary" v-on:click="getPresentsByUser()">GetPresentsByUser</button>
+        <button type="button" class="btn btn-outline-primary" v-on:click="getPresentsByUser()">List presents</button>
       </div>
     </div>
     <div v-if="authenticated">
-      <div v-if="presentData != null" id="presentList">
-        <ul class="list-group">
-          <div v-for="present in presentData">
-            <li class="list-group-item col-7 mx-auto">
-              <div class="d-flex w-100 justify-content-between">
-                {{present.presentName}} {{present.presentDesc}}, {{present.presentPrice}}
-                <div class="btn-group-xs">
-                  <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentId)">Update present</button>
-                  <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentId)">Delete present</button>
-                </div>
-              </div>
-            </li>
-          </div>
-        </ul>
+      <div class="user-list-title">
+        Current user: {{currentUser.userName}}
       </div>
+      <div class="row">
+        <div class="col-3">
+          <div v-if="userData != null" id="userList">
+            <ul class="list-group">
+              <div v-for="user in userData">
+                <li class="list-group-item col-7 mx-auto">
+                  <div class="d-flex w-100 justify-content-between">
+                    {{user.userName}}
+                    <div class="btn-group-xs">
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </div>
+        </div>
+        <div class="col-9">
+          <div v-if="presentData != null" id="presentList">
+            <ul class="list-group">
+              <div v-for="present in presentData">
+                <li class="list-group-item col-7 mx-auto">
+                  <div class="d-flex w-100 justify-content-between">
+                    {{present.presentName}} {{present.presentDesc}}, {{present.presentPrice}}
+                    <div class="btn-group-xs">
+                      <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentId)">Update present</button>
+                      <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentId)">Delete present</button>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </div>
+        </div>
+      </div>  
     </div>
 
     <div v-if="authenticated">
