@@ -141,7 +141,7 @@ class User2(Resource):
 				response = {'status': 'fail', 'message': 'Not Found'}
 				responseCode = 404
 			else:
-				response = {'user': row }
+				response = {'status': 'success', 'user': row }
 		except:
 			abort(500) # Nondescript server error
 		finally:
@@ -181,7 +181,7 @@ class User(Resource):
 				response = {'status': 'fail', 'message': 'Not Found'}
 				responseCode = 404
 			else:
-				response = {'user': row }
+				response = {'status': 'success', 'user': row }
 		except:
 			abort(500) # Nondescript server error
 		finally:
@@ -294,6 +294,7 @@ class Users(Resource):
 
 		if 'username' in session:
 			username = session['username']
+			print("Exec User: " + username)
 			response = {'status': 'success'}
 			responseCode = 200
 		else:
@@ -355,7 +356,7 @@ class Users(Resource):
 			dbConnection.close()
 		# Return user ID
 		ID = row['LAST_INSERT_ID()']
-		return make_response(jsonify( { "userID" : ID } ), 201) # successful resource creation
+		return make_response(jsonify( { "status": "success", "userID" : ID } ), 201) # successful resource creation
 
 
 class Present(Resource):
