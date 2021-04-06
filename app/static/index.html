@@ -17,7 +17,7 @@
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
         <button type="button" class="btn btn-outline-primary" v-on:click="getUsers()">List users</button>
         <button type="button" class="btn btn-outline-primary" v-on:click="showModal()">Add a present</button>
-
+        <button type="button" class="btn btn-outline-primary" v-on:click="getPresentsByUser()">GetPresentsByUser</button>
       </div>
     </div>
     <div v-if="authenticated">
@@ -26,7 +26,7 @@
           <div v-for="present in presentData">
             <li class="list-group-item col-7 mx-auto">
               <div class="d-flex w-100 justify-content-between">
-                {{present.presentName}} ({{present.presentDesc}}), {{present.presentPrice}}
+                {{present.presentName}} {{present.presentDesc}}, {{present.presentPrice}}
                 <div class="btn-group-xs">
                   <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentId)">Update present</button>
                   <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentId)">Delete present</button>
@@ -47,15 +47,15 @@
           default content
         -->
         <div slot="header" class="modal-header">
-          Add a present here:
+          Add a present here: (* Denotes required field)
         </div>
         <div slot="body">
           <div class="form-group col-6">
             <div class="input-group mb-3">
               <div class="input-group-prepend">
-                <span class="input-group-text  modal-prepend">Present</span>
+                <span class="input-group-text  modal-prepend">Present *</span>
               </div>
-              <input class="col-8 form-control" type="text" id="presentName" v-model="presentForm.presentName" placeholder="What did you get? (Ex: Saint's Row IV)" />
+              <input class="col-8 form-control" required type="text" id="presentName" v-model="presentForm.presentName" placeholder="What did you get? (Ex: Saint's Row IV)" />
             </div>
             <div class="input-group mb-3">
               <div class="input-group-prepend">
@@ -65,9 +65,9 @@
             </div>
             <div class="input-group mb-3">
               <div class="input-group-prepend">
-                <span class="input-group-text  modal-prepend">Price</span>
+                <span class="input-group-text  modal-prepend">Price *</span>
               </div>
-              <input class="col-8 form-control" type="text" id="presentPrice" v-model="presentForm.presentPrice" placeholder="How much was it? (Ex: 19.99)" />
+              <input class="col-8 form-control" required type="number" step="any" id="presentPrice" v-model="presentForm.presentPrice" placeholder="How much was it? (Ex: 19.99)" />
               <div class="input-group-postend">
                 <span class="input-group-text  modal-prepend">$</span>
               </div>
