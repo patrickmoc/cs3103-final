@@ -1,6 +1,6 @@
 #/usr/bin/env python
 APP_HOST = 'cs3103.cs.unb.ca'
-APP_PORT = 
+APP_PORT = 8007
 APP_DEBUG = True
 
 DB_HOST = 'localhost'
