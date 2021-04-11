@@ -159,7 +159,14 @@ Vue.component("modal", {
     },
  
      deletePresent(presentId) {
-       alert("WHEN THE IMPOSTER IS SUS");
+       axios 
+      .delete(this.serviceURL+"/present/"+presentId)
+      .then(response => {
+        this.getPresentsByUser();
+      })
+      .catch(e => {
+        console.log(e);
+      });
      },
  
      selectPresent(presentId) {
