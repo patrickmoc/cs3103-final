@@ -27,7 +27,7 @@
       <div class="row">
         <div class="col-3">
           <div v-if="userData != null" id="userList">
-            <ul class="list-group">
+            <ul class="user-list-group">
               <div v-for="user in userData">
                 <li class="list-group-item col-7 mx-auto">
                   <div class="d-flex w-100 justify-content-between">
@@ -46,10 +46,10 @@
               <div v-for="present in presentData">
                 <li class="list-group-item col-7 mx-auto">
                   <div class="d-flex w-100 justify-content-between">
-                    {{present.presentName}} {{present.presentDesc}}, {{present.presentPrice}}
+                    {{present.presentName}}<br>{{present.presentDesc}}<br>{{present.presentPrice}}$
                     <div class="btn-group-xs">
-                      <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentId)">Update present</button>
-                      <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentId)">Delete present</button>
+                      <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentID)">Update present</button>
+                      <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentID)">Delete present</button>
                     </div>
                   </div>
                 </li>

@@ -8,7 +8,7 @@ Vue.component("modal", {
  
    //------- data --------
    data: {
-     serviceURL: "https://cs3103.cs.unb.ca:8007",
+     serviceURL: "https://cs3103.cs.unb.ca:45020",
      // Whether or not the user is authenticated
      authenticated: false,
      userData: null,
