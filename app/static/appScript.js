@@ -40,21 +40,7 @@ Vue.component("modal", {
        userId: ""
      }
    },
-   //------- lifecyle hooks --------
-   /*mounted: function() {
-     axios
-     .get(this.serviceURL+"/signin")
-     .then(response => {
-       if (response.data.status == "success") {
-         this.authenticated = true;
-         this.loggedIn = response.data.user_id;
-       }
-     })
-     .catch(error => {
-         this.authenticated = false;
-         console.log(error);
-     });
-   },*/
+
    //------- methods --------
    methods: {
      login() {
