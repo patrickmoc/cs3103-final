@@ -40,25 +40,12 @@ Vue.component("modal", {
        userId: ""
      }
    },
-   //------- lifecyle hooks --------
-   /*mounted: function() {
-     axios
-     .get(this.serviceURL+"/signin")
-     .then(response => {
-       if (response.data.status == "success") {
-         this.authenticated = true;
-         this.loggedIn = response.data.user_id;
-       }
-     })
-     .catch(error => {
-         this.authenticated = false;
-         console.log(error);
-     });
-   },*/
+
    //------- methods --------
    methods: {
      login() {
        if (this.input.username != "" && this.input.password != "") {
+
          // Hit LDAP endpoint for initial authentication
          axios
          .post(this.serviceURL+"/signin", {
@@ -69,42 +56,7 @@ Vue.component("modal", {
              if (response.data.status == "success") {
                this.authenticated = true;
                this.loggedIn = response.data.user_id;
-
-               // Get user object from the database
-               axios
-               .get(this.serviceURL+"/username/"+this.input.username)
-               .then(response => {
-                 if(response.data.status == "success") {
-                    this.currentUser = response.data.user
-                 }
-                 else {
-
-                   // User doesn't exist, create it
-                   axios
-                   .post(this.serviceURL+"/users/", {
-                     "Name": this.input.username
-                   })
-                   .then(response => {
-                     if(response.data.status == "success") {
-
-                       // Get newly created user object
-                        axios
-                        .get(this.serviceURL+"/user/" + response.data.userID)
-                        .then(response => {
-                          this.currentUser = response.data.user
-                        })
-                     }
-                     else {
-
-                       // If this happens something has gone horribly wrong
-                       this.authenticated = false;
-                       loggedIn = null;
-                       alert("a bruh moment has occurred, please try again");
-                       this.input.password = "";
-                     }
-                   })
-                 }
-               })
+               this.login_getUserByName(this.input.username);
              }
          })
          .catch(e => {
@@ -116,7 +68,64 @@ Vue.component("modal", {
          alert("A username and password must be present");
        }
      },
- 
+
+     login_getUserByName(name) {
+         // Get user object from the database
+         axios
+         .get(this.serviceURL+"/username/"+this.input.username)
+         .then(response => {
+            this.currentUser = response.data.user;
+            this.getUsers();
+        })
+        .catch(e => {
+          if(e.response) {
+            if(e.response.status == 404) {
+              this.login_CreateNewUser(name);
+            }
+            else {
+              alert("An internal error occured, please try again");
+              this.input.password = "";
+              console.log(e);
+            }
+          } else {
+            alert("An internal error occured, please try again");
+            this.input.password = "";
+            console.log(e);
+          }
+        })
+     },
+
+     login_GetUserById(ID) {
+        // Get newly created user object
+        axios
+        .get(this.serviceURL+"/user/" + ID)
+        .then(response => {
+            this.currentUser = response.data.user
+            this.getUsers();
+        })
+        .catch(e => {
+          alert("An internal error occured, please try again");
+          this.input.password = "";
+          console.log(e);
+        })
+     },
+
+     login_CreateNewUser(name) {
+        // User doesn't exist, create it
+        axios
+        .post(this.serviceURL+"/users", {
+          "Name": name
+        })
+        .then(response => {
+          this.login_GetUserById(response.data.userID)
+        })
+        .catch(e => {
+          alert("An internal error occured (regis), please try again");
+          this.input.password = "";
+          console.log(e);
+          })
+     },
+
      logout() {
        axios
        .delete(this.serviceURL+"/signin")

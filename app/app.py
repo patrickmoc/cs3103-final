@@ -309,33 +309,6 @@ class Users(Resource):
 		name = request.json['Name']
 		isAdmin = 0
 
-		# Get executing user
-		try:
-			dbConnection = pymysql.connect(settings.DB_HOST,
-				settings.DB_USER,
-				settings.DB_PASSWD,
-				settings.DB_DATABASE,
-				charset='utf8mb4',
-				cursorclass= pymysql.cursors.DictCursor)
-			sql = 'getUserByName'
-			cursor = dbConnection.cursor()
-			sqlArgs = (username,)
-			cursor.callproc(sql,sqlArgs)
-			user = cursor.fetchone()
-			if user is None:
-				abort(404)
-		except:
-			abort(500)
-		finally:
-			cursor.close()
-			dbConnection.close()
-
-		# Only allow users to make a user under their own name
-		if username != name and not user["isAdmin"]:
-			response = {'status': 'fail', 'message': 'Access Denied'}
-			responseCode = 403
-			return make_response(jsonify(response), responseCode)
-
 		try:
 			dbConnection = pymysql.connect(settings.DB_HOST,
 				settings.DB_USER,
