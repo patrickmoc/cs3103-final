@@ -8,6 +8,15 @@
   width: 360px;
  }
 
+ .user-list-title {
+   font-size: 18px;
+   font-weight: bold;
+ }
+
+ .user-list-group {
+    width: 400px;
+ }
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -26,6 +35,11 @@
   overflow-x: auto;
   display: flex;
   flex-direction: column;
+}
+
+.user-presents-button {
+  color: #0000AB;
+  padding-left: 20px;
 }
 
 .modal-header,

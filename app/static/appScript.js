@@ -17,7 +17,8 @@ Vue.component("modal", {
      loggedIn: null,
      // All info about the current user
      currentUser: null,
-     modal: false,
+     modalAdd: false,
+     modalUpdate: false,
      input: {
        username: "",
        password: ""
@@ -32,7 +33,7 @@ Vue.component("modal", {
        desc: "",
        price: "",
        owner: "",
-       presentId: ""
+       presentID: ""
      },
      selectedUser: {
        name: "",
@@ -69,6 +70,7 @@ Vue.component("modal", {
              if (response.data.status == "success") {
                this.authenticated = true;
                this.loggedIn = response.data.user_id;
+               this.getUsers();
 
                // Get user object from the database
                axios
@@ -142,10 +144,8 @@ Vue.component("modal", {
        });
      },
 
-     getPresentsByUser() {
-       if(this.selectedUser.userID == undefined) {
-         this.selectedUser = this.currentUser;
-       }
+     getPresentsByUser(userId) {
+      this.selectedUser.userID = userId;
 
       axios
       .get(this.serviceURL+"/presents/"+this.selectedUser.userID)
@@ -162,7 +162,7 @@ Vue.component("modal", {
        axios 
       .delete(this.serviceURL+"/present/"+presentId)
       .then(response => {
-        this.getPresentsByUser();
+        this.getPresentsByUser(this.currentUser.userID);
       })
       .catch(e => {
         console.log(e);
@@ -170,7 +170,7 @@ Vue.component("modal", {
      },
  
      selectPresent(presentId) {
-         this.showModal();
+      //   this.showModal();
        for (x in this.presentData) {
          if (this.presentData[x].presentID == presentId) {
            this.selectedPresent = this.presentData[x];
@@ -191,12 +191,10 @@ Vue.component("modal", {
               this.presentForm.presentName = "";
               this.presentForm.presentDesc = "";
               this.presentForm.presentPrice = "";
-              this.getPresentsByUser();
+              this.getPresentsByUser(this.currentUser.userID);
               
               this.hideModal();
               alert("Present Added Successfully");
-
-
             }
         })
         .catch(e => {
@@ -208,16 +206,49 @@ Vue.component("modal", {
       }
     },
  
-     updatePresent(updatedPresent) {
-       // TODO: use axios.update to send the updated record to the service
+     updatePresent(updatedPresentId) {
+      if (this.presentForm.presentName != "" && this.presentForm.presentPrice != "") {
+        axios
+        .post(this.serviceURL+"/present/" + updatedPresentId, {
+            "presentName": this.presentForm.presentName,
+            "presentDesc": this.presentForm.presentDesc,
+            "presentPrice": this.presentForm.presentPrice
+        })
+        .then(response => {
+            if (response.data.status == "success") {
+              this.presentForm.presentName = "";
+              this.presentForm.presentDesc = "";
+              this.presentForm.presentPrice = "";
+              this.getPresentsByUser(this.currentUser.userID);
+              
+              this.hideModal();
+              alert("Present Updated Successfully");
+            }
+        })
+        .catch(e => {
+            alert("Unable to register present, please try again");
+            console.log(e);
+        });
+      } else {
+        alert("Present must have a name and a price");
+      }
      },
  
-     showModal() {
-       this.modal = true;
+     showModalAdd() {
+       this.modalAdd = true;
      },
+
+     showModalUpdate() {
+      this.modalUpdate = true;
+    },
  
      hideModal() {
-       this.modal = false;
+       if (this.modalAdd) {
+        this.modalAdd = false;
+       }
+       if (this.modalUpdate) {
+        this.modalUpdate = false;
+       }
      }
  
    }
