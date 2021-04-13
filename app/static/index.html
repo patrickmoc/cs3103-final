@@ -15,9 +15,7 @@
       </div>
       <div v-else class="text-center">
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
-        <button type="button" class="btn btn-outline-primary" v-on:click="getUsers()">List users</button>
-        <button type="button" class="btn btn-outline-primary" v-on:click="showModal()">Add a present</button>
-        <button type="button" class="btn btn-outline-primary" v-on:click="getPresentsByUser()">List presents</button>
+        <button type="button" class="btn btn-outline-primary" v-on:click="showModalAdd()">Add a present</button>
       </div>
     </div>
     <div v-if="authenticated">
@@ -33,6 +31,7 @@
                   <div class="d-flex w-100 justify-content-between">
                     {{user.userName}}
                     <div class="btn-group-xs">
+                      <button class="utilityBtn user-presents-button" v-on:click="getPresentsByUser(user.userID)">View presents</button>
                     </div>
                   </div>
                 </li>
@@ -48,7 +47,8 @@
                   <div class="d-flex w-100 justify-content-between">
                     {{present.presentName}}<br>{{present.presentDesc}}<br>{{present.presentPrice}}$
                     <div class="btn-group-xs">
-                      <button class="utilityBtn text-success" v-on:click="updatePresent(present.presentID)">Update present</button>
+                      <button class="utilityBtn text-success" v-on:click="selectPresent(present.presentID); showModalUpdate()">Update present</button>
+                      <br>
                       <button class="utilityBtn text-danger" v-on:click="deletePresent(present.presentID)">Delete present</button>
                     </div>
                   </div>
@@ -62,8 +62,7 @@
 
     <div v-if="authenticated">
 
-      <modal v-if="modal" @close="hideModal">
-
+      <modal v-if="modalAdd" @close="hideModal">
         <!--
           you can use custom content here to overwrite
           default content
@@ -98,6 +97,45 @@
         </div>
         <div slot="footer">
             <button type="button" class="btn btn-secondary" v-on:click="addPresent()">Add present</button>
+            <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
+        </div>
+      </modal>
+
+      <modal v-if="modalUpdate" @close="hideModal">
+        <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <div slot="header" class="modal-header">
+          Update a present's info: (* Denotes required field)
+        </div>
+        <div slot="body">
+          <div class="form-group col-6">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text  modal-prepend">Present *</span>
+              </div>
+              <input class="col-8 form-control" required type="text" id="presentName" v-model="presentForm.presentName" value=selectedPresent.name />
+            </div>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text modal-prepend">Description</span>
+              </div>
+              <input class="col-8 form-control" type="text" id="presentDesc" v-model="presentForm.presentDesc" value={{selectedPresent.desc}} />
+            </div>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text  modal-prepend">Price *</span>
+              </div>
+              <input class="col-8 form-control" required type="number" step="any" id="presentPrice" v-model="presentForm.presentPrice" value="{{selectedPresent.price}}" />
+              <div class="input-group-postend">
+                <span class="input-group-text  modal-prepend">$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div slot="footer">
+            <button type="button" class="btn btn-secondary" v-on:click="updatePresent(selectedPresent.presentID)">Update present</button>
             <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
         </div>
       </modal>
