@@ -130,16 +130,9 @@ Vue.component("modal", {
      },
 
      logout() {
-       axios
-       .delete(this.serviceURL+"/signin")
-       .then(response => {
-            this.authenticated = false;
-            this.loggedIn = null;
-            location.reload();
-       })
-       .catch(e => {
-         console.log(e);
-       });
+        this.authenticated = false;
+        this.loggedIn = null;
+        location.reload();
      },
  
      getUsers() {
