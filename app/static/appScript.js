@@ -8,7 +8,7 @@ Vue.component("modal", {
  
    //------- data --------
    data: {
-     serviceURL: "https://cs3103.cs.unb.ca:8007",
+     serviceURL: "https://cs3103.cs.unb.ca:45020",
      // Whether or not the user is authenticated
      authenticated: false,
      userData: null,
@@ -252,7 +252,12 @@ Vue.component("modal", {
        if (this.modalUpdate) {
         this.modalUpdate = false;
        }
-     }
+     },
+
+     formatPrice(value) {
+      let val = (value/1).toFixed(2) //.replace('.', ',')
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  }
  
    }
    //------- END methods --------

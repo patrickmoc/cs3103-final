@@ -55,7 +55,7 @@
               <div v-for="present in presentData">
                 <li class="list-group-item col-7 mx-auto">
                   <div class="d-flex w-100 justify-content-between">
-                    {{present.presentName}}<br>{{present.presentDesc}}<br>{{present.presentPrice}}$
+                    {{present.presentName}}<br>{{present.presentDesc}}<br>${{formatPrice(present.presentPrice)}}
                     <div v-if="currentUser.isAdmin" id="presentListButtons">
                       <div class="btn-group-xs">
                         <button class="utilityBtn text-success" v-on:click="selectPresent(present.presentID); showModalUpdate()">Update present</button>
