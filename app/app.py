@@ -51,7 +51,7 @@ class SignIn(Resource):
 	# Set Session and return Cookie
 	#
 	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X POST -d '{"username": "Rick", "password": "crapcrap"}'
+	# curl -i -H "Content-Type: application/json" -X POST -d '{"username": "pmockler", "password": "abc123"}'
 	#  	-c cookie-jar -k https://192.168.10.4:61340/signin
 	#
 	def post(self):
@@ -113,6 +113,11 @@ class SignIn(Resource):
 
 class User2(Resource):
 
+	# GET: Find user object by their username
+	#
+	# Example curl command:
+	# curl -i -H "Content-Type: application/json" -X GET 
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/username/pmockler
 	def get(self, userName):
 
 		if 'username' in session:
@@ -153,6 +158,10 @@ class User2(Resource):
 class User(Resource):
 
 	# GET: Return an identified User (by ID).
+	#
+	# Example curl command:
+	# curl -i -H "Content-Type: application/json" -X GET 
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/user/1
 	def get(self, userId):
 
 		if 'username' in session:
@@ -189,6 +198,11 @@ class User(Resource):
 			dbConnection.close()
 		return make_response(jsonify(response), responseCode) # successful
 
+	# DELETE: Remove a specified user by ID.
+	#
+	# Example curl command:
+	# curl -i -H "Content-Type: application/json" -X DELETE 
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/user/1
 	def delete(self, userId):
 		if 'username' in session:
 			username = session['username']
@@ -252,7 +266,7 @@ class Users(Resource):
     # GET: Return all User resources.
 	#
 	# Example request: curl -i -H "Content-Type: application/json" -X GET
-	# -b cookie-jar -k https://192.168.10.4:61340/users
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/users
 	def get(self):
 
 		if 'username' in session:
@@ -283,14 +297,12 @@ class Users(Resource):
 			dbConnection.close()
 		return make_response(jsonify({'users': rows}), 200)
 
+	# POST: Register new user
+	#
+	# curl -i -X POST -H "Content-Type: application/json"
+	# -d '{"Name": "pmockler"}'
+	# -b cookie-jar -k https://192.168.10.4:61340/user
 	def post(self):
-		#
-		# Sample command line usage:
-		#
-		# curl -i -X POST -H "Content-Type: application/json"
-		#	-d '{"Name": "Ricks School of Web", "Province": "NB", "Language":
-		#		  "EN", "Level": "simple"}'
-		#		 cookie-jar -k https://192.168.10.4:61340/user
 
 		if 'username' in session:
 			username = session['username']
@@ -336,7 +348,7 @@ class Present(Resource):
 	# GET: Return identified present resource (present by ID)
 	#
 	# Example request: curl -i -H "Content-Type: application/json" -X GET 
-	# -b cookie-jar -k https://192.168.10.4:61340/present/2
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/present/2
 	#
 	def get(self, presentId):
 		if 'username' in session:
@@ -369,10 +381,11 @@ class Present(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"present": row}), 200) # successful
 
-	#
 	# POST: Update a present resource (if authorized)
 	# 
-	#  TODO: VALIDATE VALIDATE VALIDATE VALIDATE
+	# Example request: curl -i -H "Content-Type: application/json" -X POST
+	# -d '{"presentName": "Fortnite Gift Card", "presentDesc": "Gift Card", "presentPrice": 19.00}'
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/present/2
 	def post(self, presentId):
 		if 'username' in session:
 			username = session['username']
@@ -430,10 +443,10 @@ class Present(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"status": "success"}), 200) # successful
 
-	# 
 	# DELETE: Delete a present resource
 	#
-	# TODO: VALIDATE (probably)
+	# Example request: curl -i -H "Content-Type: application/json" -X DELETE
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/present/2
 	def delete(self, presentId):
 		if 'username' in session:
 			username = session['username']
@@ -494,10 +507,11 @@ class Present(Resource):
 		return make_response(jsonify({"status": "success"}), 200) # successful
 
 class Presents(Resource):
+
     # GET: Return identified present resources belonging to a specified user (presnt by userID)
 	#
 	# Example request: curl -i -H "Content-Type: application/json" -X GET 
-	# -b cookie-jar -k https://192.168.10.4:61340/userPresents/2
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/presents/2
 	#
 	def get(self, userId):
 		if 'username' in session:
@@ -531,6 +545,11 @@ class Presents(Resource):
 			dbConnection.close()
 		return make_response(jsonify({"presents": row}), 200) # successful
 
+	# POST: Update a present resource (if authorized)
+	# 
+	# Example request: curl -i -H "Content-Type: application/json" -X POST
+	# -d '{"presentName": "Fortnite Gift Card", "presentDesc": "Gift Card", "presentPrice": 19.00}'
+	# -b cookie-jar -k https://cs3103.cs.unb.ca:8007/presents
 	def post(self, userId):
 		if 'username' in session:
 			username = session['username']
