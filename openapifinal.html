@@ -3144,7 +3144,7 @@ except ApiException as e:
                       <article id="api-Users-getUserByName-0" data-group="User" data-name="getUserByName" data-version="0">
                         <div class="pull-left">
                           <h1>getUserByName</h1>
-                          <p>Find a User by their username</p>
+                          <p>Find a User by username</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
@@ -3229,7 +3229,7 @@ public class UsersApiExample {
 
 UsersApi *apiInstance = [[UsersApi alloc] init];
 
-// Find a User by their username
+// Find a User by username
 [apiInstance getUserByNameWith:userName
               completionHandler: ^(array[User] output, NSError* error) {
                             if (output) {
@@ -3281,7 +3281,7 @@ namespace Example
 
             try
             {
-                // Find a User by their username
+                // Find a User by username
                 array[User] result = apiInstance.getUserByName(userName);
                 Debug.WriteLine(result);
             }
@@ -3340,7 +3340,7 @@ api_instance = swagger_client.UsersApi()
 userName = userName_example # String | username to search for.
 
 try: 
-    # Find a User by their username
+    # Find a User by username
     api_response = api_instance.get_user_by_name(userName)
     pprint(api_response)
 except ApiException as e:
@@ -3385,7 +3385,7 @@ except ApiException as e:
 
 
                           <h2>Responses</h2>
-                            <h3> Status: 200 - User with a matching username was found. </h3>
+                            <h3> Status: 200 - User with a matching ID was found. </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
@@ -3400,7 +3400,7 @@ except ApiException as e:
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
-  "description" : "User with a matching username was found.",
+  "description" : "User with a matching ID was found.",
   "content" : {
     "application/json" : {
       "schema" : {
@@ -3446,22 +3446,6 @@ except ApiException as e:
                                   </div>
                                   <input id='responses-getUserByName-200-schema-data' type='hidden' value=''></input>
                                 </div>
-                            </div>
-
-                            <h3> Status: 403 - Access denied. </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 404 - User Not Found. </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
                             </div>
 
                             <h3> Status: 500 - Server error while handling request. </h3>
