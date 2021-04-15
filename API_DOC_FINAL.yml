@@ -81,34 +81,6 @@ paths:
         '500':  
           description: Server error while handling request.
 
-    put:
-      tags:
-        - admins
-      summary: Adds a User
-      operationId: addUser
-      description: Add a new User into the system to allow them to log in.
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '201':
-          description: User created successfully.
-        '400':
-          description: Invalid User information.
-        '403':
-          description: Not authorized to add User.
-        '409':
-          description: User already exists.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        description: New User information.
-
     delete:
       tags:
         - admins
@@ -174,6 +146,39 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
         description: The User's information.
+        
+  /username/{userName}:
+    get:
+      tags:
+      - users
+      summary: Find a User by username
+      operationId: getUserByName
+      description: Returns a User with a matching username.
+      parameters:
+        - in: path
+          name: userName
+          description: username to search for.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User with a matching ID was found.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                xml:
+                  name: 'users'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':  
+          description: Server error while handling request.
 
   /present/{presentId}:
     get:
